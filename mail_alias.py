@@ -1,4 +1,6 @@
 import csv
+import xlwt
+from datetime import datetime as dt
 
 reference = {}
 
@@ -11,7 +13,7 @@ with open("alias.csv") as csv_file:
             'date_reg': row[6],
             'date_edit': row[7],
             'date_valid': row[8],
-            'not_box': row[10]
+            'not_box': int(row[10])
         }
 
 for alias in reference.keys():
@@ -22,8 +24,30 @@ for alias in reference.keys():
             if link:
                 reference[alias]['links'][adress] = link
 
-for key, val in reference.items():
-    print(key, val)
+# print(reference['staff-slm@diasoft-service.ru']['not_box'])
+# for val in reference.items():
+#     print(val)
+
+not_box_list = filter(lambda item: item[1]['not_box'] == 1 and item[1]['domen_name'] == 'diasoft-service.ru', reference.items())
+
+print(enumerate(not_box_list))
+
+wb = xlwt.Workbook()
+ws = wb.add_sheet('Рассылки')
+for i, item in list(enumerate(not_box_list)):
+    print(i, item)
+    # ws.write(0, 0, key)
+
+# out_file_name = "Рсааылки_{}.csv".format(dt.now().strftime("%Y.%m.%d"))
+# with open(out_file_name, 'w') as csv_file:
+#     writer = csv.writer(csv_file)
+#     writer.writerows(not_box_list)
+
+not_box_list_sort = sorted(not_box_list, key=lambda item: len(item[1]['links']), reverse=True)
+
+
+for key, val in not_box_list_sort:
+    print("{:<40}|{}".format(key, len(val['links'])))
 
 # with open("alias_17.08.2016.csv") as f:
 #     lines = f.readlines()
